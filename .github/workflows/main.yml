@@ -26,10 +26,10 @@ jobs:
           source .venv/bin/activate
           pip install -r requirements.txt
 
-      # Step 4: Decode Google Service Account JSON
-      - name: Decode Google Service Account JSON
+      # Step 4: Write Google Service Account JSON to a file
+      - name: Write Google Service Account JSON
         run: |
-          echo "${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}" | base64 --decode > credentials.json
+          echo "${{ secrets.GOOGLE_CREDENTIALS }}" > credentials.json
 
       # Step 5: Set up environment variables
       - name: Export environment variables
