@@ -1,8 +1,8 @@
 name: Daily Job Skill Extraction
 
 on:
-  schedule:
-    - cron: "*/2 * * * *"
+  on:
+    workflow_dispatch:  # Enable manual trigger
 
 jobs:
   extract-skills:
