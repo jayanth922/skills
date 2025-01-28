@@ -27,19 +27,14 @@ jobs:
           pip install spacy  # Install spaCy
           python -m spacy download en_core_web_lg
 
-      # Step 4: Write Google Service Account JSON to a file
-      - name: Write Google Service Account JSON
-        run: |
-          echo "${{ secrets.GOOGLE_CREDENTIALS }}" > credentials.json
-
-      # Step 5: Set up environment variables
+      # Step 4: Export environment variables
       - name: Export environment variables
         run: |
-          echo "GOOGLE_SERVICE_ACCOUNT_JSON=credentials.json" >> $GITHUB_ENV
+          echo "GOOGLE_SERVICE_ACCOUNT_JSON=${{ secrets.GOOGLE_CREDENTIALS }}" >> $GITHUB_ENV
           echo "THEIRSTACK_API_KEY=${{ secrets.THEIRSTACK_API_KEY }}" >> $GITHUB_ENV
           echo "GOOGLE_DOC_ID=${{ secrets.GOOGLE_DOC_ID }}" >> $GITHUB_ENV
 
-      # Step 6: Run the Python script
+      # Step 5: Run the Python script
       - name: Run the Python script
         run: |
           source .venv/bin/activate
