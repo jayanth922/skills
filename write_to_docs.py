@@ -11,7 +11,13 @@ GOOGLE_DOC_ID = os.getenv("GOOGLE_DOC_ID")
 def write_to_google_docs(text):
     """Write the aggregated skills to a Google Docs document."""
     SCOPES = ['https://www.googleapis.com/auth/documents']
-    creds = Credentials.from_service_account_file(GOOGLE_SERVICE_ACCOUNT_JSON, scopes=SCOPES)
+    
+    # Load the JSON content from the environment variable
+    credentials_info = json.loads(GOOGLE_SERVICE_ACCOUNT_JSON)
+    
+    # Create credentials from the loaded JSON data
+    creds = Credentials.from_service_account_info(credentials_info, scopes=SCOPES)
+    
     service = build("docs", "v1", credentials=creds)
 
     # Update document content
