@@ -6,3 +6,4 @@ spacy
 requests
 python-dotenv
 ipython
+collections
