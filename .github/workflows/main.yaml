@@ -1,8 +1,7 @@
 name: Daily Job Skill Extraction
 
 on:
-  on:
-    workflow_dispatch:  # Enable manual trigger
+  workflow_dispatch:  # Enable manual trigger
 
 jobs:
   extract-skills:
