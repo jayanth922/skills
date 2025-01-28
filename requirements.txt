@@ -5,3 +5,4 @@ skillNer
 spacy
 requests
 python-dotenv
+ipython
