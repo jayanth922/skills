@@ -24,8 +24,6 @@ jobs:
           python -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
-          pip install spacy  # Install spaCy
-          python -m spacy download en_core_web_lg
 
       # Step 4: Export environment variables
       - name: Export environment variables
