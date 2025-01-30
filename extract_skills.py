@@ -1,11 +1,19 @@
-import spacy
-from spacy.matcher import PhraseMatcher
-from skillNer.skill_extractor_class import SkillExtractor
-from skillNer.general_params import SKILL_DB
+import torch
+from transformers import DistilBertTokenizer, DistilBertForTokenClassification
 
-# Initialize SkillNER
-nlp = spacy.load("en_core_web_lg")
-skill_extractor = SkillExtractor(nlp, SKILL_DB, PhraseMatcher)
+# Initialize model and tokenizer
+def initialize_model(model_path, num_labels=2):
+    tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
+    model = DistilBertForTokenClassification.from_pretrained(
+        'distilbert-base-uncased',
+        num_labels=num_labels
+    )
+    model.load_state_dict(torch.load(model_path))
+    model.eval()
+    return model, tokenizer
+
+# Global model and tokenizer
+model, tokenizer = initialize_model("model_final.pt")
 
 def extract_skills_from_job(job):
     """Extract skills from a single job description."""
@@ -15,10 +23,40 @@ def extract_skills_from_job(job):
         return []
 
     try:
-        annotations = skill_extractor.annotate(description)
-        full_matches = annotations.get("results", {}).get("full_matches", [])
-        extracted_skills = [match["doc_node_value"] for match in full_matches]
-        return extracted_skills
+        # Tokenize input
+        inputs = tokenizer(
+            description,
+            truncation=True,
+            padding='max_length',
+            max_length=512,
+            return_tensors='pt'
+        )
+        
+        # Get predictions
+        with torch.no_grad():
+            outputs = model(**inputs)
+            predictions = torch.argmax(outputs.logits, dim=2)
+        
+        # Convert predictions to skills
+        tokens = tokenizer.convert_ids_to_tokens(inputs['input_ids'][0])
+        skills = []
+        current_skill = []
+        
+        for token, pred in zip(tokens, predictions[0]):
+            if pred == 1:
+                if token.startswith('##'):
+                    current_skill.append(token[2:])
+                else:
+                    if current_skill:
+                        skills.append(''.join(current_skill))
+                        current_skill = []
+                    current_skill.append(token)
+        
+        if current_skill:
+            skills.append(''.join(current_skill))
+            
+        return skills
+        
     except Exception as e:
         print(f"DEBUG: Error processing job description: {e}")
         return []
